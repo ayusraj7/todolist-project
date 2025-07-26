@@ -5,6 +5,15 @@ import socketService from '../services/socket';
 import { Task, User } from '../types';
 import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
+import {
+  containerClass,
+  cardClass,
+  buttonClass,
+  inputClass,
+  flexCenterClass,
+  headingClass,
+  loadingClass
+} from '../styles/twClasses';
 
 interface DashboardProps {
   user: User;
@@ -28,7 +37,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     socketService.joinRoom('tasks');
 
     socketService.onTaskCreated((task) => {
-      setTasks(prev => [task, ...prev]);
+      setTasks(prev => {
+        if (prev.some(t => t._id === task._id)) return prev;
+        return [task, ...prev];
+      });
     });
 
     socketService.onTaskUpdated((updatedTask) => {
@@ -88,7 +100,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   };
 
   const handleTaskCreated = (newTask: Task) => {
-    setTasks(prev => [newTask, ...prev]);
+    setTasks(prev => {
+      if (prev.some(t => t._id === newTask._id)) return prev;
+      return [newTask, ...prev];
+    });
     setShowModal(false);
   };
 
@@ -105,68 +120,55 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   });
 
   if (loading) {
-    return <div className="loading">Loading tasks...</div>;
+    return <div className={loadingClass}>Loading tasks...</div>;
   }
 
   return (
-    <div>
-      <header className="header">
-        <div className="header-content">
-          <div className="logo">Task Manager</div>
-          <div className="user-info">
-            <div className="avatar">{user.username.charAt(0).toUpperCase()}</div>
-            <span>{user.username}</span>
-            <button onClick={onLogout} className="btn btn-secondary">
-              Logout
-            </button>
-          </div>
+    <div className={containerClass}>
+      {/* User info and logout button can be moved to Navbar if needed */}
+
+      <div className={cardClass}>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className={headingClass}>My Tasks</h1>
+          <button onClick={handleCreateTask} className={buttonClass}>
+            Create Task
+          </button>
         </div>
-      </header>
 
-      <div className="container">
-        <div className="dashboard">
-          <div className="dashboard-header">
-            <h1 className="dashboard-title">My Tasks</h1>
-            <button onClick={handleCreateTask} className="btn btn-primary">
-              Create Task
-            </button>
-          </div>
+        <div className="flex gap-4 mb-6">
+          <input
+            type="text"
+            placeholder="Search tasks..."
+            value={filters.search}
+            onChange={(e) => handleFilterChange('search', e.target.value)}
+            className={inputClass}
+          />
+          <select
+            value={filters.status}
+            onChange={(e) => handleFilterChange('status', e.target.value)}
+            className={inputClass}
+          >
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
 
-          <div className="filters">
-            <input
-              type="text"
-              placeholder="Search tasks..."
-              value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="search-input"
-            />
-            <select
-              value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="filter-select"
-            >
-              <option value="">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="in-progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
-
-          <div className="task-grid">
-            {filteredTasks.length === 0 ? (
-              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem' }}>
-                <p>No tasks found. Create your first task!</p>
-              </div>
-            ) : (
-              filteredTasks.map(task => (
-                <TaskCard
-                  key={task._id}
-                  task={task}
-                  onClick={() => handleTaskClick(task._id)}
-                />
-              ))
-            )}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredTasks.length === 0 ? (
+            <div className="col-span-full text-center py-8 text-gray-500">
+              <p>No tasks found. Create your first task!</p>
+            </div>
+          ) : (
+            filteredTasks.map(task => (
+              <TaskCard
+                key={task._id}
+                task={task}
+                onClick={() => handleTaskClick(task._id)}
+              />
+            ))
+          )}
         </div>
       </div>
 

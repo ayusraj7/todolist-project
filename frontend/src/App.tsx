@@ -4,6 +4,7 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './components/Dashboard';
 import TaskDetail from './components/TaskDetail';
+import Navbar from './components/Navbar';
 import socketService from './services/socket';
 import { User, AuthUser } from './types';
 import './App.css';
@@ -58,6 +59,7 @@ function App() {
 
   return (
     <Router>
+      <Navbar isLoggedIn={!!user} user={user} onLogout={handleLogout} />
       <div className="App">
         <Routes>
           <Route 

@@ -54,9 +54,6 @@ export interface TaskForm {
   tags: string[];
 }
 
-export interface CommentForm {
-  text: string;
-}
 
 export interface ApiResponse<T> {
   data?: T;

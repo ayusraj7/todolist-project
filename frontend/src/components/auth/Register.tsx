@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { authAPI } from '../../services/api';
 import { AuthUser, RegisterForm } from '../../types';
+import {
+  containerClass,
+  cardClass,
+  buttonClass,
+  inputClass,
+  errorClass,
+  headingClass
+} from '../../styles/twClasses';
 
 interface RegisterProps {
   onLogin: (user: AuthUser, token: string) => void;
@@ -79,71 +87,72 @@ const Register: React.FC<RegisterProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="form-container">
-      <h2 className="form-title">Register</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="username" className="form-label">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            className={`form-input ${errors.username ? 'error' : ''}`}
-            placeholder="Enter your username"
-          />
-          {errors.username && <div className="form-error">{errors.username}</div>}
+    <div className={containerClass + ' min-h-screen flexCenterClass'}>
+      <div className={cardClass + ' w-full max-w-md'}>
+        <h2 className={headingClass + ' text-center'}>Register</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="username" className="block mb-1 font-medium text-gray-700">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className={inputClass + (errors.username ? ' border-red-500' : '')}
+              placeholder="Enter your username"
+            />
+            {errors.username && <div className={errorClass}>{errors.username}</div>}
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block mb-1 font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={inputClass + (errors.email ? ' border-red-500' : '')}
+              placeholder="Enter your email"
+            />
+            {errors.email && <div className={errorClass}>{errors.email}</div>}
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block mb-1 font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={inputClass + (errors.password ? ' border-red-500' : '')}
+              placeholder="Enter your password"
+            />
+            {errors.password && <div className={errorClass}>{errors.password}</div>}
+          </div>
+
+          {errors.general && <div className={errorClass}>{errors.general}</div>}
+
+          <button
+            type="submit"
+            className={buttonClass + ' w-full'}
+            disabled={loading}
+          >
+            {loading ? 'Creating account...' : 'Register'}
+          </button>
+        </form>
+
+        <div className="mt-6 text-center text-sm text-gray-600">
+          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login here</Link>
         </div>
-
-        <div className="form-group">
-          <label htmlFor="email" className="form-label">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className={`form-input ${errors.email ? 'error' : ''}`}
-            placeholder="Enter your email"
-          />
-          {errors.email && <div className="form-error">{errors.email}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className={`form-input ${errors.password ? 'error' : ''}`}
-            placeholder="Enter your password"
-          />
-          {errors.password && <div className="form-error">{errors.password}</div>}
-        </div>
-
-        {errors.general && <div className="form-error">{errors.general}</div>}
-
-        <button
-          type="submit"
-          className="btn btn-primary"
-          style={{ width: '100%' }}
-          disabled={loading}
-        >
-          {loading ? 'Creating account...' : 'Register'}
-        </button>
-      </form>
-
-      <div className="form-link">
-        Already have an account? <Link to="/login">Login here</Link>
       </div>
     </div>
   );

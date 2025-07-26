@@ -1,13 +1,11 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const { connectDB } = require('./utils/db');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
 const socketIo = require('socket.io');
 
-const authRoutes = require('./routes/auth');
-const taskRoutes = require('./routes/tasks');
-const userRoutes = require('./routes/users');
+const globalRouter = require('./index');
 
 dotenv.config();
 
@@ -26,16 +24,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
+connectDB(process.env.MONGODB_URI);
 
-app.use('/api/auth', authRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/v1', globalRouter);
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);

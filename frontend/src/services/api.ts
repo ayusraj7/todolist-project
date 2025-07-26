@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
-import { AuthResponse, Task, User, LoginForm, RegisterForm, TaskForm, CommentForm } from '../types';
+import { AuthResponse, Task, User, LoginForm, RegisterForm, TaskForm } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -63,8 +63,6 @@ export const taskAPI = {
   deleteTask: (id: string): Promise<AxiosResponse<{ message: string }>> =>
     api.delete(`/tasks/${id}`),
 
-  addComment: (taskId: string, data: CommentForm): Promise<AxiosResponse<Task>> =>
-    api.post(`/tasks/${taskId}/comments`, data),
 };
 
 export const userAPI = {
